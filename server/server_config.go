@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"github.com/joho/godotenv"
@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-type ApiConfig struct {
+type Config struct {
 	findCountryEndpoint string
 	appPort             string
 	maxRequests         int
 }
 
-func newApiConfig() *ApiConfig {
-	apiConfig := ApiConfig{}
+func newApiConfig() *Config {
+	apiConfig := Config{}
 	err := godotenv.Load("env_variables.env")
 
 	if err != nil {

@@ -1,6 +1,8 @@
 package main
 
+import "server/ip2country/server"
+
 func main() {
-	server := newServer()
-	server.run()
+	s := server.NewServer()
+	s.Run()
 }
