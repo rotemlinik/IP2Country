@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 type CsvImpl struct {
@@ -13,15 +14,20 @@ type CsvImpl struct {
 func NewDb() Db {
 	dbConfig := newDbConfig()
 
-	f, err := os.Open(dbConfig.dbPath)
+	pwd, err := os.Getwd()
 	if err != nil {
-		log.Fatal("Unable to read input file " + dbConfig.dbPath, err)
+		log.Fatal(err)
+	}
+
+	f, err := os.Open(filepath.Join(pwd, "/db", dbConfig.dbPath))
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Fatal("Unable to close input file " + dbConfig.dbPath, err)
+			log.Fatal(err)
 		}
 	}(f)
 

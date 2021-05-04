@@ -13,7 +13,7 @@ type Config struct {
 	maxRequests         int
 }
 
-func newApiConfig() *Config {
+func newConfig() *Config {
 	apiConfig := Config{}
 	err := godotenv.Load("env_variables.env")
 

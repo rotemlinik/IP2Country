@@ -17,8 +17,8 @@ type Server struct {
 
 func NewServer() *Server {
 	server := Server{}
-	server.db = Db.NewDb() // TODO also pointer???
-	server.config = newApiConfig()
+	server.db = Db.NewDb()
+	server.config = newConfig()
 	server.rateLimiter = make(chan bool, server.config.maxRequests)
 
 	return &server
@@ -35,13 +35,6 @@ func (server *Server) Run() {
 	}
 }
 
-func sendTick(rateLimiter chan<- bool) {
-	rate := time.Tick(time.Second)
-	for range rate {
-		rateLimiter <- true
-	}
-}
-
 func (server *Server) handleGetLocation(responseWriter http.ResponseWriter, request *http.Request) {
 	if request.URL.Path != server.config.findCountryEndpoint {
 		respondWithError(responseWriter, http.StatusNotFound, "404 not found.")
@@ -51,14 +44,21 @@ func (server *Server) handleGetLocation(responseWriter http.ResponseWriter, requ
 		respondWithError(responseWriter, http.StatusMethodNotAllowed, "Method is not supported.")
 	}
 
+	ip := request.URL.Query().Get("ip")
 	select {
 	case <-server.rateLimiter:
-		fmt.Println("processing request!")
-		ip := request.URL.Query().Get("ip")
-		fmt.Println("ip =>", ip)
+		log.Printf("received request for ip: %v\n", ip)
 		respondWithJSON(responseWriter, http.StatusOK, server.db.GetLocation(ip))
 	default:
+		log.Printf("rejected request for ip: %v with %v code\n", ip, http.StatusTooManyRequests)
 		respondWithError(responseWriter, http.StatusTooManyRequests, "Too many requests.")
+	}
+}
+
+func sendTick(rateLimiter chan<- bool) {
+	rate := time.Tick(time.Second * 3)
+	for range rate {
+		rateLimiter <- true
 	}
 }
 
