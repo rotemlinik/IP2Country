@@ -25,7 +25,7 @@ func NewServer() *Server {
 }
 
 func (server *Server) Run() {
-	go sendTick(server.rateLimiter)
+	go server.sendTick()
 
 	http.HandleFunc(server.config.findCountryEndpoint, server.handleGetLocation)
 
@@ -55,10 +55,10 @@ func (server *Server) handleGetLocation(responseWriter http.ResponseWriter, requ
 	}
 }
 
-func sendTick(rateLimiter chan<- bool) {
+func (server *Server) sendTick() {
 	rate := time.Tick(time.Second * 3)
 	for range rate {
-		rateLimiter <- true
+		server.rateLimiter <- true
 	}
 }
 

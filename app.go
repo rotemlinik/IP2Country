@@ -20,7 +20,6 @@ func main() {
 	}(f)
 
 	log.SetOutput(f)
-	log.Println("This is a test log entry")
 
 	s := server.NewServer()
 	s.Run()

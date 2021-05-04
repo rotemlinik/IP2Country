@@ -13,13 +13,34 @@ type CsvImpl struct {
 
 func NewDb() Db {
 	dbConfig := newDbConfig()
+	csvImpl := CsvImpl{}
+	csvImpl.mapCsv(getRecordsFromCsv(dbConfig.dbPath))
 
+	return &csvImpl
+}
+
+func (dbCsvImpl *CsvImpl) GetLocation(ip string) Location {
+	return dbCsvImpl.ip2LocationMap[ip]
+}
+
+func (dbCsvImpl *CsvImpl) mapCsv(records [][]string) {
+	ip2LocationMap := make(map[string]Location)
+
+	for i := 1; i < len(records); i++ {
+		record := records[i]
+		ip2LocationMap[record[0]] = Location{Country: record[1], City: record[2]}
+	}
+
+	dbCsvImpl.ip2LocationMap = ip2LocationMap
+}
+
+func getRecordsFromCsv(path string) [][]string {
 	pwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	f, err := os.Open(filepath.Join(pwd, "/db", dbConfig.dbPath))
+	f, err := os.Open(filepath.Join(pwd, "/db", path))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,26 +55,8 @@ func NewDb() Db {
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		log.Fatal("Unable to parse file as CSV for " + dbConfig.dbPath, err)
+		log.Fatal(err)
 	}
 
-	csvImpl := CsvImpl{}
-	csvImpl.ip2LocationMap = mapCsv(records)
-
-	return &csvImpl
-}
-
-func (dbCsvImpl *CsvImpl) GetLocation(ip string) Location {
-	return dbCsvImpl.ip2LocationMap[ip]
-}
-
-func mapCsv(records [][]string) map[string]Location {
-	returnMap := make(map[string]Location)
-
-	for i := 1; i < len(records); i++ {
-		record := records[i]
-		returnMap[record[0]] = Location{Country: record[1], City: record[2]}
-	}
-
-	return returnMap
+	return records
 }
