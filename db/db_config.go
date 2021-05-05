@@ -8,6 +8,8 @@ import (
 
 type Config struct {
 	dbPath string
+	dbUserName string
+	dbPassword string
 }
 
 func newDbConfig() *Config {
@@ -18,7 +20,9 @@ func newDbConfig() *Config {
 	}
 
 	dbConfig := Config{}
-	dbConfig.dbPath = os.Getenv("CSV_PATH")
+	dbConfig.dbPath = os.Getenv("DB_PATH")
+	dbConfig.dbUserName = os.Getenv("DB_USER_NAME")
+	dbConfig.dbPassword = os.Getenv("DB_PASSWORD")
 
 	return &dbConfig
 }
