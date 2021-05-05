@@ -38,10 +38,12 @@ func (server *Server) Run() {
 func (server *Server) handleGetLocation(responseWriter http.ResponseWriter, request *http.Request) {
 	if request.URL.Path != server.config.findCountryEndpoint {
 		respondWithError(responseWriter, http.StatusNotFound, "404 not found.")
+		return
 	}
 
 	if request.Method != http.MethodGet {
 		respondWithError(responseWriter, http.StatusMethodNotAllowed, "Method is not supported.")
+		return
 	}
 
 	ip := request.URL.Query().Get("ip")

@@ -19,5 +19,5 @@ request:
 >curl http://localhost:8080/v1/find-country?ip=192.168.1.31
 
 response:
-> {"Country":"Israel","City":"Tel-Aviv"}
+>{"Country":"Israel","City":"Tel-Aviv"}
 
